@@ -1,5 +1,8 @@
 import React from 'react';
-import { AiOutlineGoogle,AiOutlineFacebook,AiOutlineX } from "react-icons/ai";
+import { Link } from 'react-router-dom';
+import { AiOutlineGoogle,AiOutlineX } from "react-icons/ai";
+import { FaFacebookF } from "react-icons/fa";
+import {LoginSocialGoogle} from 'reactjs-social-login'
 
 const Signup = () => {
     return (
@@ -23,12 +26,12 @@ const Signup = () => {
                             placeholder="Enter your password"
                         />
                     </div>
+                    <Link to="/home">
                     <button
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-                    >
+                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300">
                         Sign Up
-                    </button>
+                    </button></Link>
                 </form>
                 <div className="mt-6 flex justify-between items-center">
                     <hr className="w-full border-gray-300" />
@@ -36,11 +39,20 @@ const Signup = () => {
                     <hr className="w-full border-gray-300" />
                 </div>
                 <div className="flex justify-center mt-6 space-x-4">
-                    <button className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition duration-300">
-                        <AiOutlineGoogle />
-                    </button>
+                    <div>
+                        <LoginSocialGoogle client_id='238139246455-9hm7016mp98thslt7i31j82u40736ds7.apps.googleusercontent.com'
+                        accessype='offline'
+                        onResolve={({provider,data})=>{console.log(provider,data)}}
+                        onReject={(error)=>{console.log(error)}}
+                        >
+                            <button className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition duration-300">
+                                <AiOutlineGoogle />
+                            </button>
+                        </LoginSocialGoogle>
+                    </div>
+                    
                     <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition duration-300">
-                        <>F</>
+                        <FaFacebookF />
                     </button>
                     <button className="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition duration-300">
                         <AiOutlineX />
@@ -48,9 +60,7 @@ const Signup = () => {
                 </div>
                 <p className="mt-6 text-center text-gray-500">
                     Already have an account?{' '}
-                    <a href="./login" id=" signup" className="text-blue-500 hover:underline" >
-                        Log In
-                    </a>
+                    <Link to="/login" className="text-blue-500 hover:underline">Log In</Link>
                 </p>
             </div>
         </div>

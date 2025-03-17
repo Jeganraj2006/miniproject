@@ -8,24 +8,30 @@ import Products from './pages/Products'
 import Navigation from './Navigation'
 import Footer from './Footer'
 import './App.css'
-
+import { BrowserRouter , Routes, Route } from 'react-router-dom'
 
 
 function App() {
 
   return (
-    // a b2b digital marketplace where fair food trade is made easy, fast and transparent!
-    <div >
-      <Navigation />
-      
+    <div>
+    <BrowserRouter>
+    <Navigation />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+      </Routes>
+      <Routes>
+        <Route path="/home" element={<Home />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/rental" element={<Rental />} />
+        <Route path="/transaction" element={<Transaction />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
       <Footer />
-      {/* <Home />
-      <Login/>
-      <Products />
-      <Rental />
-      <Transaction />
-      <History />
-       */}
+    </BrowserRouter>
     </div>
   )
 }

@@ -30,7 +30,7 @@ const Transaction = () => {
             >
               <option value="">Choose a method</option>
               <option value="creditCard">Credit Card</option>
-              <option value="paypal">PayPal</option>
+              <option value="paypal">Gpay</option>
               <option value="bankTransfer">Bank Transfer</option>
             </select>
           </div>

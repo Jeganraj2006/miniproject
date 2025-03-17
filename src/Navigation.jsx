@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link} from 'react-router-dom'
 
 const Navigation = () => {
   return (
@@ -6,12 +7,12 @@ const Navigation = () => {
     <header >
     <div className="bg-green-600 text-white p-4 flex justify-around fixed w-full z-10">
     <h1 className="text-3xl font-bold text-center">Agrilink</h1>
-    <h1 className='p-2 ml-20 '>Home</h1>
-    <h1  className='p-2'>Products List</h1>
-    <h1  className='p-2'>Rental Items</h1>
-    <h1  className='p-2'>Cart</h1>
-    <h1 className='p-2'>History</h1>
-    <h1  className='p-2'>Transaction</h1>
+    <Link to="/home" className="text-white">Home</Link> 
+    <Link to="/products" className="text-white">Products</Link>
+    <Link to="/history" className="text-white">History</Link>
+    <Link to="/rental" className="text-white">Rental</Link>
+    <Link to="/transaction" className="text-white">Transaction</Link> 
+    <Link to="/login" className="text-white">Login</Link>    
 <div class="tooltip-container">
   <div class="button-content">
     <span class="text">Share</span>

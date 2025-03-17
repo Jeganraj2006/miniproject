@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router-dom'
 import { AiOutlineGoogle,AiOutlineX } from "react-icons/ai";
 import { FaFacebookF } from "react-icons/fa";
 
@@ -26,12 +27,10 @@ const Login = () => {
                             placeholder="Enter your password"
                         />
                     </div>
-                    <button
+                    <Link to="/home"><button
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-                    >
-                        Login
-                    </button>
+                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300">
+                    Login</button></Link>
                 </form>
                 <div className="mt-6 flex items-center justify-between">
                     <span className="border-b w-1/5 lg:w-1/4"></span>
@@ -46,8 +45,8 @@ const Login = () => {
                         onReject={(error)=>{console.log(error)}}
                         ><button className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition duration-300">
                         <AiOutlineGoogle />
-                    </button>
-                    </LoginSocialGoogle>
+                        </button>
+                        </LoginSocialGoogle>
                     </div>
                     <div>
                         <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition duration-300">
@@ -61,9 +60,7 @@ const Login = () => {
                     </div>
                 </div>
                 <div className="mt-6 text-center">
-                    <a href="#" className="text-blue-500 hover:underline">
-                        Don't have an account? Sign up
-                    </a>
+                    <Link to="/signup" className="text-blue-500 hover:underline">Don't have an account? Sign up</Link>
                 </div>
             </div>
         </div>
