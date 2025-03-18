@@ -1,19 +1,17 @@
 import React from 'react'
-import { Link} from 'react-router-dom'
+import {Link} from 'react-router-dom'
 
-const Navigation = () => {
+const Seller_navigation = () => {
   return (
-    <div >
-    <header >
+    <div>
+        <header >
     <div className="bg-green-600 text-white p-4 flex justify-around fixed w-full z-10">
     <h1 className="text-3xl font-bold text-center">Agrilink</h1>
-    <Link to="/" className="text-white">Home</Link> 
-    <Link to="/products" className="text-white">Products</Link>
-    {/* <Link to="/history" className="text-white">History</Link> */}
-    <Link to="/rental" className="text-white">Rental</Link>
-    <h1>Cart</h1>
-    <Link to="/transaction" className="text-white">Transaction</Link> 
-    <Link to="/login_options" className="text-white">Login</Link>    
+    <Link to="/sDashboard" className="text-white">Dashboard</Link>
+    <Link to="/sproducts" className="text-white">Products_list</Link>
+    <Link to="/srental" className="text-white">Rental_list</Link>
+    <Link to="/sorders_history" className="text-white">Orders_History</Link> 
+    <Link to="/sOrders" className="text-white">Orders</Link> 
 <div class="tooltip-container">
   <div class="button-content">
     <span class="text">Share</span>
@@ -72,9 +70,9 @@ const Navigation = () => {
 </div>
 
     </div>
-    </header>
+    </header>   
     </div>
   )
 }
 
-export default Navigation
+export default Seller_navigation

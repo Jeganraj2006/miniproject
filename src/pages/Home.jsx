@@ -6,8 +6,8 @@ const Home = () => {
         <div className="bg-green-50 ">
             <main className=" pt-20">
                 <section className="text-center mb-8 ">
-                    <div className=' mt-5 w-full h-150 relative bg-gradient-to-tl from-green-300 to-indigo-300'>
-                        <img src={img} alt="" className='w-full  object-cover mix-blend-overlay absolute h-150'/>
+                    <div className=' mt-5 w-full h-200 relative bg-gradient-to-tl from-green-300 to-indigo-300'>
+                        <img src={img} alt="" className='w-full  object-cover mix-blend-overlay absolute h-200'/>
                         <div className='ml-4 mr-4 pt-24 pb-24 translate-y-100'><h2 className="text-4xl font-semibold mb-4 text-slate-700 ">A B2C digital marketplace where fair food trade is made easy, fast, and transparent!</h2>
                     </div>
                     </div>

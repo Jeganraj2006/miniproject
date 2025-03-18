@@ -15,6 +15,10 @@
   box-shadow: 0 0 2rem rgb(220, 240, 138);
   
 }
+.cart:hover{
+  transform: scale(1.1);
+
+}
 .card {
   width: 200px;
   height: 200px;

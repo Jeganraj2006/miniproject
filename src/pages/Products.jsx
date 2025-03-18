@@ -11,6 +11,7 @@ import millet from '../Images/millet.webp'
 import paddy from '../Images/paddy.jpg'
 import radish from '../Images/red_radish_seeds.webp'
 import ragi from '../Images/ragi.jpg'
+import { FaCartShopping } from "react-icons/fa6";
 
 
 
@@ -37,13 +38,14 @@ const Products = () => {
 </div>
       <section className='mt-10'>
         <div className='grid grid-cols-4 gap-5 space-y-30 items-center justify-center ml-15'>
-          <div className=' w-50 relative h-50 prod_list'>
+          <div className=' w-50 relative h-50'>
           <div class="card">
             <div class="card-inner">
               <div class="card-front">
               <img src={wheet} alt="" className='object-cover h-50 w-60 rounded-xl'/>
               </div>
               <div className="card-back">
+                <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
                 <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
                 <h1>calories:</h1>
                 <h1>Description:</h1>
@@ -54,96 +56,239 @@ const Products = () => {
           <div className='justify-center  space-y-2'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Wheet</h1>
               <div className='space-y-2'>
-              <h1>Price:₹100</h1>
+              <h1>Price:₹100 /kg</h1>
               <h3>Rating</h3>
               </div>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-          <img src={dal} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={dal} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+                <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Dal</h1>
-              <h1>Price:₹120</h1>
+              <h1>Price:₹120 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={beens} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={beens} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">                
+                <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+                <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Beens</h1>
-              <h1>Price:₹90</h1>
+              <h1>Price:₹90 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={coffee} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={coffee} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+              <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Coffee Beens</h1>
-              <h1>Price:₹245</h1>
+              <h1>Price:₹245 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={lotus} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={lotus} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+              <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Lotus Seeds</h1>
-              <h1>Price:₹160</h1>
+              <h1>Price:₹160 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={chia} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={chia} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+              <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Chia seeds</h1>
-              <h1>Price:₹170</h1>
+              <h1>Price:₹170 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={sunflower} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={sunflower} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+              <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Sunflower Seeds</h1>
-              <h1>Price:₹130</h1>
+              <h1>Price:₹130 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={pumpkin} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={pumpkin} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+              <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Pumpkin Seeds</h1>
-              <h1>Price:₹40</h1>
+              <h1>Price:₹40 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={millet} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={millet} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+              <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Millet</h1>
-              <h1>Price:₹140</h1>
+              <h1>Price:₹140 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={paddy} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={paddy} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+              <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Paddy</h1>
-              <h1>Price:₹60</h1>
+              <h1>Price:₹60 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={radish} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={radish} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+              <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Radish Seeds</h1>
-              <h1>Price:₹120</h1>
+              <h1>Price:₹120 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>
           <div className=' w-50 relative h-50 prod_list'>
-            <img src={ragi} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+          <div class="card">
+            <div class="card-inner">
+              <div class="card-front">
+              <img src={ragi} alt="" className='object-cover h-50 w-50 rounded-xl'/>
+              </div>
+              <div className="card-back">
+              <div className='mb-37 ml-2 text-black cart'><FaCartShopping /></div>
+              <div className='space-y-2 grid grid-cols-1 font-black text-gray-950'>
+                <h1>calories:</h1>
+                <h1>Description:</h1>
+                </div>
+              </div>
+            </div>
+          </div>
             <div className='justify-center'>
               <h1 className="text-2xl font-semibold text-slate-700 ">Ragi</h1>
-              <h1>Price:₹110</h1>
+              <h1>Price:₹110 /kg</h1>
               <h3>Rating</h3>
             </div>
           </div>

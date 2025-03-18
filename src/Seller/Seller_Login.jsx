@@ -5,11 +5,11 @@ import { FaFacebookF } from "react-icons/fa";
 
 import {LoginSocialGoogle} from 'reactjs-social-login'
 
-const Login = () => {
+const Seller_Login = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-                <h2 className="text-2xl font-bold mb-6 text-center">Login as customer</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center">Login as seller</h2>
                 <form className="space-y-4">
                     <div>
                         <label className="block text-gray-700">Email</label>
@@ -27,7 +27,7 @@ const Login = () => {
                             placeholder="Enter your password"
                         />
                     </div>
-                    <Link to="/"><button
+                    <Link to="/sDashboard"><button
                         type="submit"
                         className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300">
                     Login</button></Link>
@@ -60,11 +60,11 @@ const Login = () => {
                     </div>
                 </div>
                 <div className="mt-6 text-center">
-                    <Link to="/signup" className="text-blue-500 hover:underline">Don't have an account? Sign up</Link>
+                    {/* <Link to="/signup" className="text-blue-500 hover:underline">Don't have an account? Sign up</Link> */}
                 </div>
             </div>
         </div>
     );
 };
 
-export default Login;
+export default Seller_Login;
