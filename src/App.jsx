@@ -44,7 +44,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
       </Routes>
       
-      
+
       <Seller_navigation />
       <Routes>
       <Route path="/sLogin" element={<Seller_Login />} />
