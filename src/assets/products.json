@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "name": "Wheat",
+    "price": 100,
+    "quantity": 50,
+    "unit": "kg",
+    "image": "https://m.media-amazon.com/images/I/81lu-isqZqL.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Dal",
+    "price": 120,
+    "quantity": 30,
+    "unit": "kg",
+    "image": "https://5.imimg.com/data5/SELLER/Default/2023/2/WS/HZ/WZ/142327526/organic-toor-dal-1000x1000.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Beans",
+    "price": 90,
+    "quantity": 45,
+    "unit": "kg",
+    "image": "https://www.bigbasket.com/media/uploads/p/l/40033813_7-fresho-french-beans.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Coffee Beans",
+    "price": 245,
+    "quantity": 20,
+    "unit": "500g",
+    "image": "https://m.media-amazon.com/images/I/71v8ZNR0+DL._SX679_.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Lotus Seeds",
+    "price": 160,
+    "quantity": 25,
+    "unit": "250g",
+    "image": "https://m.media-amazon.com/images/I/61TMC3VhgrL.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Rice",
+    "price": 80,
+    "quantity": 60,
+    "unit": "kg",
+    "image": "https://www.bigbasket.com/media/uploads/p/l/1200006_3-daawat-rice-basmati.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Sugar",
+    "price": 45,
+    "quantity": 55,
+    "unit": "kg",
+    "image": "https://www.bigbasket.com/media/uploads/p/l/40018345_2-maidens-sugar.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Salt",
+    "price": 20,
+    "quantity": 100,
+    "unit": "kg",
+    "image": "https://www.bigbasket.com/media/uploads/p/l/263202_7-tata-salt-iodized.jpg"
+  },
+  {
+    "id": 9,
+    "name": "Turmeric Powder",
+    "price": 60,
+    "quantity": 40,
+    "unit": "250g",
+    "image": "https://m.media-amazon.com/images/I/61tEK0PLnNL._SL1500_.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Chili Powder",
+    "price": 70,
+    "quantity": 35,
+    "unit": "250g",
+    "image": "https://m.media-amazon.com/images/I/71kErjKnE2L._SL1500_.jpg"
+  },
+  {
+    "id": 11,
+    "name": "Coriander",
+    "price": 55,
+    "quantity": 28,
+    "unit": "500g",
+    "image": "https://m.media-amazon.com/images/I/71cdwJOnfrL._SL1500_.jpg"
+  },
+  {
+    "id": 12,
+    "name": "Groundnut",
+    "price": 130,
+    "quantity": 38,
+    "unit": "kg",
+    "image": "https://m.media-amazon.com/images/I/51uOr1fyoLL._SL1000_.jpg"
+  },
+  {
+    "id": 13,
+    "name": "Mustard Seeds",
+    "price": 50,
+    "quantity": 42,
+    "unit": "500g",
+    "image": "https://m.media-amazon.com/images/I/71KcZbpRl2L._SL1500_.jpg"
+  },
+  {
+    "id": 14,
+    "name": "Jaggery",
+    "price": 90,
+    "quantity": 48,
+    "unit": "kg",
+    "image": "https://m.media-amazon.com/images/I/41YVfuEBKeL.jpg"
+  },
+  {
+    "id": 15,
+    "name": "Tamarind",
+    "price": 85,
+    "quantity": 22,
+    "unit": "500g",
+    "image": "https://m.media-amazon.com/images/I/61LQpkKABCL._SL1000_.jpg"
+  },
+  {
+    "id": 16,
+    "name": "Ragi",
+    "price": 75,
+    "quantity": 33,
+    "unit": "kg",
+    "image": "https://www.bigbasket.com/media/uploads/p/l/10000406_11-fresho-ragi.jpg"
+  },
+  {
+    "id": 17,
+    "name": "Maize",
+    "price": 95,
+    "quantity": 31,
+    "unit": "kg",
+    "image": "https://www.bigbasket.com/media/uploads/p/l/10000394_13-fresho-corn.jpg"
+  },
+  {
+    "id": 18,
+    "name": "Black Gram",
+    "price": 110,
+    "quantity": 27,
+    "unit": "kg",
+    "image": "https://m.media-amazon.com/images/I/61fydtOKeXL._SL1000_.jpg"
+  },
+  {
+    "id": 19,
+    "name": "Green Gram",
+    "price": 115,
+    "quantity": 36,
+    "unit": "kg",
+    "image": "https://m.media-amazon.com/images/I/81Kv0z0ZBzL._SL1500_.jpg"
+  },
+  {
+    "id": 20,
+    "name": "Fenugreek",
+    "price": 40,
+    "quantity": 52,
+    "unit": "250g",
+    "image": "https://m.media-amazon.com/images/I/71OJ5s5Vm8L._SL1500_.jpg"
+  }
+]
