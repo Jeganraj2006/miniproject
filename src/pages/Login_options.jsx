@@ -2,7 +2,7 @@ import React from 'react'
 import { Link} from 'react-router-dom'
 const Login_options = () => {
   return (
-    <div className="pt-30 flex items-center justify-center bg-gray-100 pb-45">
+    <div className="pt-30 flex items-center justify-center bg-gray-100 pb-55">
         <div className="bg-white p-15 rounded-lg shadow-lg w-full max-w-md space-y-6">
             <h1 className='text-xl'>Choose who you are....</h1>
             <div className='flex justify-around'>

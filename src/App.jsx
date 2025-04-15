@@ -14,7 +14,7 @@ import { BrowserRouter , Routes, Route } from 'react-router-dom'
 
 import Seller_navigation from './Seller_navigation' 
 import Seller_Login from './Seller/Seller_Login'
-import Login_options from './Login_options'
+import Login_options from './pages/Login_options'
 import Dashboard from './Seller/Dashboard'
 import Products_list from './Seller/Products_list'
 import Rental_list from './Seller/Rental_list'
@@ -35,8 +35,6 @@ function App() {
         <Route path="/transaction" element={<Transaction />} />
         <Route path="/products" element={<Products />} />
         <Route path="/login" element={<Login />} />
-      </Routes>
-      <Routes>
       <Route path="/login_options" element={<Login_options />} />
       </Routes>
       <Routes>
