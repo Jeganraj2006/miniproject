@@ -8,7 +8,7 @@ const Seller_Login = () => {
   const [user, setUser] = useState(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // For navigation
 
   useEffect(() => {
     const getSession = async () => {
@@ -26,11 +26,17 @@ const Seller_Login = () => {
     };
   }, []);
 
+  // Handle Google Login with redirect after success
   const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { user, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
     });
-    if (error) console.error('Error with login:', error);
+    if (error) {
+      console.error('Error with login:', error);
+    } else {
+      console.log('User logged in:', user);
+      navigate('/sDashboard'); // Redirect to /sDashboard after successful login
+    }
   };
 
   const handleEmailLogin = async (e) => {
@@ -39,7 +45,7 @@ const Seller_Login = () => {
     if (error) {
       alert("Login failed: " + error.message);
     } else {
-      navigate('/sDashboard');
+      navigate('/sDashboard'); // Redirect to /sDashboard after successful login
     }
   };
 
