@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineGoogle, AiOutlineX } from "react-icons/ai";
 import { FaFacebookF } from "react-icons/fa";
-
-import { supabase } from './supabaseclient';
+import { supabase } from '../../supabaseClient';
 
 const Seller_Login = () => {
   const [user, setUser] = useState(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // For navigation
 
-  // ✅ Check session on mount
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -16,7 +17,6 @@ const Seller_Login = () => {
     };
     getSession();
 
-    // ✅ Listen to auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
     });
@@ -26,15 +26,29 @@ const Seller_Login = () => {
     };
   }, []);
 
-  // ✅ Google Login function
+  // Handle Google Login with redirect after success
   const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { user, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
     });
-    if (error) console.error('Error with login:', error);
+    if (error) {
+      console.error('Error with login:', error);
+    } else {
+      console.log('User logged in:', user);
+      navigate('/sDashboard'); // Redirect to /sDashboard after successful login
+    }
   };
 
-  // ✅ Logout function
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      alert("Login failed: " + error.message);
+    } else {
+      navigate('/sDashboard'); // Redirect to /sDashboard after successful login
+    }
+  };
+
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) console.error('Error with logout:', error);
@@ -57,11 +71,13 @@ const Seller_Login = () => {
           </div>
         ) : (
           <>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleEmailLogin}>
               <div>
                 <label className="block text-gray-700">Email</label>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter your email"
                 />
@@ -70,18 +86,18 @@ const Seller_Login = () => {
                 <label className="block text-gray-700">Password</label>
                 <input
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter your password"
                 />
               </div>
-              <Link to="/sDashboard">
-                <button
-                  type="submit"
-                  className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-                >
-                  Login
-                </button>
-              </Link>
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+              >
+                Login
+              </button>
             </form>
           </>
         )}
@@ -110,7 +126,9 @@ const Seller_Login = () => {
         </div>
 
         <div className="mt-6 text-center">
-          <Link to="/signup" className="text-blue-500 hover:underline">Don't have an account? Sign up</Link>
+          <Link to="/sSignup" className="text-blue-500 hover:underline">
+            Don't have an account? Sign up
+          </Link>
         </div>
       </div>
     </div>
