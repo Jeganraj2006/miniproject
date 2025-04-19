@@ -4,20 +4,46 @@ import { supabase } from '../supabaseClient'; // adjust path as needed
 
 const Navigation = () => {
   const [session, setSession] = useState(null);
+  const [role, setRole] = useState(null); // client or seller
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get current session
-    const getSession = async () => {
+    const getSessionAndRole = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
+
+      if (session?.user?.id) {
+        const userId = session.user.id;
+
+        // Check if user is in 'clients'
+        const { data: clientData } = await supabase
+          .from('clients')
+          .select('id')
+          .eq('id', userId)
+          .single();
+
+        if (clientData) {
+          setRole('client');
+        } else {
+          // Otherwise, check if user is a seller
+          const { data: sellerData } = await supabase
+            .from('sellers')
+            .select('id')
+            .eq('id', userId)
+            .single();
+
+          if (sellerData) {
+            setRole('seller');
+          }
+        }
+      }
     };
 
-    getSession();
+    getSessionAndRole();
 
-    // Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      getSessionAndRole();
     });
 
     return () => {
@@ -28,7 +54,8 @@ const Navigation = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setSession(null);
-    navigate('/'); // redirect to homepage after logout
+    setRole(null);
+    navigate('/');
   };
 
   return (
@@ -40,14 +67,20 @@ const Navigation = () => {
           <Link to="/products" className="text-white">Products</Link>
           <Link to="/rental" className="text-white">Rental</Link>
 
-          {session && (
+          {session && role === 'client' && (
             <>
+              <Link to="/client-dashboard" className="text-white">Dashboard</Link>
               <Link to="/cart" className="text-white">Cart</Link>
               <Link to="/transaction" className="text-white">Transaction</Link>
             </>
           )}
 
-          {/* Show Login if not logged in, else show Logout */}
+          {session && role === 'seller' && (
+            <>
+              <Link to="/sDashboard" className="text-white">Dashboard</Link>
+            </>
+          )}
+
           {!session ? (
             <Link to="/login_options" className="text-white">Login</Link>
           ) : (

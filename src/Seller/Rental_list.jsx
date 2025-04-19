@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IoMdAdd } from 'react-icons/io';
 import { GrFormSubtract } from 'react-icons/gr';
 import { FiSave } from 'react-icons/fi';
+import { MdDelete } from 'react-icons/md'; // 🆕 Import delete icon
 import { supabase } from '../../supabaseClient'; // adjust if needed
 import AddRentalForm from './AddRentalForm'; // ✅ Import added
 
@@ -62,6 +63,24 @@ const Rental_list = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this rental?');
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from('rentals')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Delete error:', error.message);
+      alert('Failed to delete rental.');
+    } else {
+      alert('Rental deleted.');
+      fetchRentals();
+    }
+  };
+
   return (
     <div className="pt-10 px-10 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold mb-8">Rental Listings</h1>
@@ -105,12 +124,22 @@ const Rental_list = () => {
                 />
               </div>
 
-              <button
-                onClick={() => handleSave(rental.id)}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md flex items-center gap-2 hover:bg-blue-700 transition-all duration-200"
-              >
-                <FiSave /> Save Changes
-              </button>
+              <div className="flex space-x-4 mt-4">
+                <button
+                  onClick={() => handleSave(rental.id)}
+                  className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md flex items-center gap-2 hover:bg-blue-700 transition-all duration-200"
+                >
+                  <FiSave /> Save
+                </button>
+
+                {/* 🗑️ Delete Button */}
+                <button
+                  onClick={() => handleDelete(rental.id)}
+                  className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md flex items-center gap-2 hover:bg-red-700 transition-all duration-200"
+                >
+                  <MdDelete /> Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>

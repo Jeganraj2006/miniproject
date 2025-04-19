@@ -18,6 +18,8 @@ import Products from './pages/Products';
 import Cart from './pages/Cart';
 import Navigation from './Navigation';
 import Footer from './assets/Footer';
+import AuthCallback from './pages/AuthCallback';
+import ClientDashboard from './pages/ClientDashboard';
 
 import Seller_navigation from './SellerNavigation';
 import Seller_Login from './Seller/SellerLogin';
@@ -25,7 +27,7 @@ import Seller_Signup from './Seller/Sellersignup';
 import Login_options from './pages/Login_options';
 import Dashboard from './Seller/Dashboard';
 import Productslist from './Seller/Productslist';
-import RentalList from './Seller/Rental_list';  // Update import here
+import RentalList from './Seller/Rental_list';
 import Orders from './Seller/Order';
 import Orders_History from './Seller/Orders_History';
 
@@ -61,7 +63,6 @@ function AppContent() {
   const isSellerRoute = location.pathname.startsWith('/s');
   const showSellerNav = isSellerRoute && sellerUser;
 
-  // Role-based protection
   const PrivateRoute = ({ children, allowedRole }) => {
     const role = localStorage.getItem('selectedRole');
     return role === allowedRole ? children : <Navigate to="/" />;
@@ -69,7 +70,6 @@ function AppContent() {
 
   return (
     <div>
-      {/* Dynamic Navigation */}
       {showSellerNav ? <Seller_navigation /> : <Navigation />}
 
       <Routes>
@@ -79,14 +79,16 @@ function AppContent() {
         <Route path="/products" element={<Products />} />
         <Route path="/rental" element={<Rental />} />
         <Route path="/transaction" element={<Transaction />} />
+        <Route path="/cart" element={<Cart />} /> {/* ✅ Added Cart Route */}
         <Route path="/login" element={<Login />} />
         <Route path="/login_options" element={<Login_options />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/client-dashboard" element={
           <PrivateRoute allowedRole="client">
-            <Home /> {/* Replace with a real ClientDashboard component if needed */}
+            <ClientDashboard />
           </PrivateRoute>
-        }/>
+        } />
 
         {/* Seller Routes */}
         <Route path="/sLogin" element={<Seller_Login />} />
@@ -96,7 +98,7 @@ function AppContent() {
             <Dashboard />
           </PrivateRoute>
         } />
-        <Route path="/srental" element={<RentalList />} />  {/* Update path here */}
+        <Route path="/srental" element={<RentalList />} />
         <Route path="/sproducts" element={<Productslist />} />
         <Route path="/sorder_history" element={<Orders_History />} />
         <Route path="/sorders" element={<Orders />} />

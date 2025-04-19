@@ -7,21 +7,17 @@ import { supabase } from '../../supabaseClient'; // Import supabase client
 const Seller_signup = () => {
     const [loading, setLoading] = useState(false);
 
-    // ✅ Google Login function with Supabase
+    // ✅ Updated Google Login function with redirectTo
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
-            const { user, session, error } = await supabase.auth.signInWithOAuth({
+            localStorage.setItem('selectedRole', 'seller'); // Save role
+            await supabase.auth.signInWithOAuth({
                 provider: 'google',
+                options: {
+                    redirectTo: 'http://localhost:5173/auth-callback',
+                },
             });
-            
-            if (error) {
-                console.error("Error with login:", error);
-                setLoading(false);
-            } else {
-                console.log("User logged in:", user);
-                // Redirect user or update the state
-            }
         } catch (error) {
             console.error("Error with Google login:", error);
             setLoading(false);
@@ -65,7 +61,6 @@ const Seller_signup = () => {
                     <hr className="w-full border-gray-300" />
                 </div>
 
-                {/* Google login button */}
                 <div className="flex justify-center mt-6 space-x-4">
                     <div>
                         <button
@@ -76,7 +71,6 @@ const Seller_signup = () => {
                             <AiOutlineGoogle />
                         </button>
                     </div>
-
                     <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition duration-300">
                         <FaFacebookF />
                     </button>
