@@ -18,6 +18,8 @@ import Products from './pages/Products';
 import Cart from './pages/Cart';
 import Navigation from './Navigation';
 import Footer from './assets/Footer';
+import AuthCallback from './pages/AuthCallback';
+
 
 import Seller_navigation from './SellerNavigation';
 import Seller_Login from './Seller/SellerLogin';
@@ -82,6 +84,7 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/login_options" element={<Login_options />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/auth-callback" element={<AuthCallback />} />
         <Route path="/client-dashboard" element={
           <PrivateRoute allowedRole="client">
             <Home /> {/* Replace with a real ClientDashboard component if needed */}
