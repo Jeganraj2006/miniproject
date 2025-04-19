@@ -3,13 +3,14 @@ import {
   Routes,
   Route,
   useLocation,
+  Navigate,
 } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Signup from './pages/Signup';
+import Signup from './pages/signup';
 import History from './pages/History';
 import Rental from './pages/Rental';
 import Transaction from './pages/Transaction';
@@ -23,8 +24,8 @@ import Seller_Login from './Seller/SellerLogin';
 import Seller_Signup from './Seller/Sellersignup';
 import Login_options from './pages/Login_options';
 import Dashboard from './Seller/Dashboard';
-import Products_list from './Seller/Products_list';
-import Rental_list from './Seller/Rental_list';
+import Productslist from './Seller/Productslist';
+import RentalList from './Seller/Rental_list';  // Update import here
 import Orders from './Seller/Order';
 import Orders_History from './Seller/Orders_History';
 
@@ -60,6 +61,12 @@ function AppContent() {
   const isSellerRoute = location.pathname.startsWith('/s');
   const showSellerNav = isSellerRoute && sellerUser;
 
+  // Role-based protection
+  const PrivateRoute = ({ children, allowedRole }) => {
+    const role = localStorage.getItem('selectedRole');
+    return role === allowedRole ? children : <Navigate to="/" />;
+  };
+
   return (
     <div>
       {/* Dynamic Navigation */}
@@ -75,13 +82,22 @@ function AppContent() {
         <Route path="/login" element={<Login />} />
         <Route path="/login_options" element={<Login_options />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/client-dashboard" element={
+          <PrivateRoute allowedRole="client">
+            <Home /> {/* Replace with a real ClientDashboard component if needed */}
+          </PrivateRoute>
+        }/>
 
         {/* Seller Routes */}
         <Route path="/sLogin" element={<Seller_Login />} />
         <Route path="/sSignup" element={<Seller_Signup />} />
-        <Route path="/sDashboard" element={<Dashboard />} />
-        <Route path="/srental" element={<Rental_list />} />
-        <Route path="/sproducts" element={<Products_list />} />
+        <Route path="/sDashboard" element={
+          <PrivateRoute allowedRole="seller">
+            <Dashboard />
+          </PrivateRoute>
+        } />
+        <Route path="/srental" element={<RentalList />} />  {/* Update path here */}
+        <Route path="/sproducts" element={<Productslist />} />
         <Route path="/sorder_history" element={<Orders_History />} />
         <Route path="/sorders" element={<Orders />} />
       </Routes>
