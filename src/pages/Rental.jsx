@@ -29,10 +29,14 @@ const Rental = () => {
       image: rental.image,
       description: rental.description,
       price: rental.rent_per_day,  // Add the rent price
+      table: 'rentals', // Mark as rental
     };
 
     // Add to cart
     addToCart(rentalItem);
+
+    // Log the table name when the rental item is added to the cart
+    console.log('Added to cart from table:', rentalItem.table); // Logs 'rentals'
   };
 
   return (
@@ -75,8 +79,6 @@ const Rental = () => {
                 </div>
               </div>
             </div>
-
-
           </div>
         ))}
       </section>

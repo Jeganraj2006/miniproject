@@ -34,11 +34,7 @@ const Transaction = () => {
     if (paymentMethod === 'gpay' && !formData.gpayId) return alert("Please enter your GPay UPI ID.");
     if (paymentMethod === 'bankTransfer' && !formData.accountNumber) return alert("Please enter your account number.");
 
-    const {
-      data: { user },
-      error: authError
-    } = await supabase.auth.getUser();
-
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       alert("You need to be logged in to complete the transaction.");
       return;
@@ -133,15 +129,20 @@ const Transaction = () => {
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2">🛒 Items Summary</h3>
           <ul className="text-gray-800 mb-4 space-y-2">
-            {cartItems.map((item) => (
-              <li key={item.id} className="flex flex-col border-b pb-2">
-                <div className="flex justify-between">
-                  <span className="font-medium">{item.name}</span>
-                  <span>₹{item.price || item.rent_per_day} × {item.selectedQuantity || 1}</span>
-                </div>
-                <div className="text-sm text-gray-500">Available: {item.quantity}</div>
-              </li>
-            ))}
+            {cartItems.map((item) => {
+              const isProduct = !!item.product_id;
+              const tableName = isProduct ? 'Product' : 'Rental';  // Set the table name for display
+              return (
+                <li key={item.id} className="flex flex-col border-b pb-2">
+                  <div className="flex justify-between">
+                    <span className="font-medium">{item.name}</span>
+                    <span>₹{item.price || item.rent_per_day} × {item.selectedQuantity || 1}</span>
+                  </div>
+                  <div className="text-sm text-gray-500">Available: {item.quantity}</div>
+                  <div className="text-xs text-gray-400">Source: {tableName}</div> {/* Display the table name */}
+                </li>
+              );
+            })}
           </ul>
           <div className="text-right text-lg font-bold">Total: ₹{totalAmount}</div>
         </div>
