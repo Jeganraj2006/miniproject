@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { supabase } from '../../supabaseClient'; // Import your Supabase client
+import { supabase } from '../../supabaseClient';
 
 const Transaction = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const cartItems = location.state?.cartItems || [];
-  
+
   const [paymentMethod, setPaymentMethod] = useState('');
   const [formData, setFormData] = useState({});
+  const [transactionStatus, setTransactionStatus] = useState(null);
+  const [loadingItems, setLoadingItems] = useState([]);
 
   const handlePaymentMethodChange = (event) => {
     setPaymentMethod(event.target.value);
-    setFormData({}); // Reset form data on method change
+    setFormData({});
   };
 
   const handleChange = (e) => {
@@ -21,93 +23,123 @@ const Transaction = () => {
 
   const totalAmount = cartItems.reduce((total, item) => {
     const price = item.price || item.rent_per_day || 0;
-    return total + price;
+    return total + price * (item.selectedQuantity || 1);
   }, 0);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!paymentMethod) return alert("Please select a payment method.");
+    if (paymentMethod === 'creditCard' && !formData.cardNumber) return alert("Please enter your credit card number.");
+    if (paymentMethod === 'gpay' && !formData.gpayId) return alert("Please enter your GPay UPI ID.");
+    if (paymentMethod === 'bankTransfer' && !formData.accountNumber) return alert("Please enter your account number.");
 
-    const client = supabase.auth.user(); // Get the authenticated user
-    const clientId = client ? client.id : null;
+    const {
+      data: { user },
+      error: authError
+    } = await supabase.auth.getUser();
 
-    if (!clientId) {
-      return alert("You need to be logged in to complete the transaction.");
+    if (authError || !user) {
+      alert("You need to be logged in to complete the transaction.");
+      return;
     }
 
-    // Create the order in the orders table
-    const orderData = {
-      client_id: clientId,
-      seller_id: cartItems[0]?.seller_id,  // Assuming first item is representative of seller
-      product_id: cartItems[0]?.product_id || null,  // Handle if it's a product or rental
-      quantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
-      total_price: totalAmount,
-      status: 'pending',  // Initial status
-      created_at: new Date().toISOString(),
-    };
+    const clientId = user.id;
+    const successPromises = [];
 
-    const { data: orderDataResponse, error: orderError } = await supabase
-      .from('orders')
-      .insert([orderData])
-      .single();
+    try {
+      for (const item of cartItems) {
+        setLoadingItems(prev => [...prev, item.id]);
 
-    if (orderError) {
-      console.error('Order Error:', orderError);
-      return alert('Error creating the order.');
+        const quantity = item.selectedQuantity || 1;
+        const isProduct = !!item.product_id;
+        const orderTable = isProduct ? 'orders' : 'rental_orders';
+        const itemIdField = isProduct ? 'product_id' : 'rental_id';
+        const sourceTable = isProduct ? 'products' : 'rentals';
+
+        // Insert into the orders or rental_orders table
+        const { data: order, error: orderError } = await supabase
+          .from(orderTable)
+          .insert([{
+            client_id: clientId,
+            seller_id: item.seller_id,
+            [itemIdField]: item.id,
+            quantity,
+            total_price: (item.price || item.rent_per_day) * quantity,
+            status: 'pending',
+            created_at: new Date().toISOString()
+          }])
+          .select()
+          .single();
+
+        if (orderError) throw orderError;
+
+        // Insert into the transactions table
+        const { error: transactionError } = await supabase
+          .from('transactions')
+          .insert([{
+            client_id: clientId,
+            amount: (item.price || item.rent_per_day) * quantity,
+            transaction_for: isProduct ? 'order' : 'rental',
+            reference_id: order.id,
+            reference_table: orderTable,
+            created_at: new Date().toISOString()
+          }]);
+
+        if (transactionError) throw transactionError;
+
+        // Update the quantity in the products or rentals table
+        const { error: updateQtyError } = await supabase
+          .from(sourceTable)
+          .update({
+            quantity: supabase.raw('quantity - ?', [quantity])  // Update quantity by subtracting the ordered quantity
+          })
+          .eq('id', item.id);
+
+        if (updateQtyError) throw updateQtyError;
+
+        // Mark the order or rental order as completed
+        await supabase
+          .from(orderTable)
+          .update({ status: 'completed' })
+          .eq('id', order.id);
+
+        successPromises.push(order);
+        setLoadingItems(prev => prev.filter(id => id !== item.id));
+      }
+
+      // Wait for all transactions to finish
+      await Promise.all(successPromises);
+      setTransactionStatus('success');
+    } catch (error) {
+      console.error('Transaction Failed:', error);
+      alert("Something went wrong during the transaction.");
     }
-
-    // Create the transaction in the transactions table
-    const transactionData = {
-      client_id: clientId,
-      amount: totalAmount,
-      transaction_for: cartItems[0]?.product_id ? 'order' : 'rental', // Adjust based on item type
-      reference_id: orderDataResponse.id, // Reference the newly created order
-      reference_table: 'orders',  // Reference table name
-      created_at: new Date().toISOString(),
-    };
-
-    const { data: transactionDataResponse, error: transactionError } = await supabase
-      .from('transactions')
-      .insert([transactionData]);
-
-    if (transactionError) {
-      console.error('Transaction Error:', transactionError);
-      return alert('Error processing the payment.');
-    }
-
-    // Update the order status after transaction success
-    const { data: updatedOrder, error: updateOrderError } = await supabase
-      .from('orders')
-      .update({ status: 'completed' })
-      .eq('id', orderDataResponse.id)
-      .single();
-
-    if (updateOrderError) {
-      console.error('Order Update Error:', updateOrderError);
-      return alert('Error updating the order status.');
-    }
-
-    console.log('Transaction and Order Created:', transactionDataResponse, updatedOrder);
-
-    // Redirect to success page or homepage after payment
-    alert('✅ Payment successful!');
-    navigate('/');
   };
+
+  useEffect(() => {
+    if (transactionStatus === 'success') {
+      alert('✅ Payment successful!');
+      navigate('/');
+    }
+  }, [transactionStatus, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
         <h2 className="text-2xl font-bold mb-6 text-center">💳 Secure Payment</h2>
 
-        {/* Order Summary */}
+        {/* Items Summary */}
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2">🛒 Items Summary</h3>
           <ul className="text-gray-800 mb-4 space-y-2">
-            {cartItems.map(item => (
-              <li key={item.id} className="flex justify-between border-b pb-1">
-                <span>{item.name}</span>
-                <span>₹{item.price || item.rent_per_day}</span>
+            {cartItems.map((item) => (
+              <li key={item.id} className="flex flex-col border-b pb-2">
+                <div className="flex justify-between">
+                  <span className="font-medium">{item.name}</span>
+                  <span>₹{item.price || item.rent_per_day} × {item.selectedQuantity || 1}</span>
+                </div>
+                <div className="text-sm text-gray-500">Available: {item.quantity}</div>
               </li>
             ))}
           </ul>
@@ -134,21 +166,19 @@ const Transaction = () => {
           </div>
 
           {paymentMethod === 'creditCard' && (
-            <>
-              <div className="mb-4">
-                <label className="block text-gray-700 font-bold mb-2" htmlFor="cardNumber">
-                  Card Number
-                </label>
-                <input
-                  type="text"
-                  id="cardNumber"
-                  value={formData.cardNumber || ''}
-                  onChange={handleChange}
-                  placeholder="1234 5678 9012 3456"
-                  className="input-style"
-                />
-              </div>
-            </>
+            <div className="mb-4">
+              <label className="block text-gray-700 font-bold mb-2" htmlFor="cardNumber">
+                Card Number
+              </label>
+              <input
+                type="text"
+                id="cardNumber"
+                value={formData.cardNumber || ''}
+                onChange={handleChange}
+                placeholder="1234 5678 9012 3456"
+                className="input-style"
+              />
+            </div>
           )}
 
           {paymentMethod === 'gpay' && (
@@ -188,7 +218,7 @@ const Transaction = () => {
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg"
             >
-              Pay Now
+              {loadingItems.length ? 'Processing...' : 'Pay Now'}
             </button>
           </div>
         </form>

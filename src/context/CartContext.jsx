@@ -6,13 +6,24 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
 
   const addToCart = (product) => {
-    // Check if item already exists in cart
-    const exists = cartItems.find(item => item.id === product.id);
-    if (exists) {
-      alert("Item already in cart!");
+    const existingItem = cartItems.find(item => item.id === product.id);
+
+    if (existingItem) {
+      if (existingItem.quantity < product.quantity) {
+        setCartItems(prev =>
+          prev.map(item =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        );
+        alert('Increased quantity in cart!');
+      } else {
+        alert('Cannot add more. Reached available stock.');
+      }
     } else {
       setCartItems([...cartItems, { ...product, quantity: 1 }]);
-      alert("Added to cart!");
+      alert('Added to cart!');
     }
   };
 
@@ -20,12 +31,21 @@ export const CartProvider = ({ children }) => {
     setCartItems(cartItems.filter(item => item.id !== id));
   };
 
+  const updateQuantity = (id, newQty) => {
+    setCartItems(prev =>
+      prev.map(item =>
+        item.id === id ? { ...item, quantity: newQty } : item
+      )
+    );
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
+    <CartContext.Provider
+      value={{ cartItems, addToCart, removeFromCart, updateQuantity }}
+    >
       {children}
     </CartContext.Provider>
   );
 };
 
-// Custom hook
 export const useCart = () => useContext(CartContext);
