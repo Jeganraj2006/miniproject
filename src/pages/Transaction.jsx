@@ -11,6 +11,7 @@ const Transaction = () => {
   const [formData, setFormData] = useState({});
   const [transactionStatus, setTransactionStatus] = useState(null);
   const [loadingItems, setLoadingItems] = useState([]);
+  const [sellerIds, setSellerIds] = useState([]);
 
   const handlePaymentMethodChange = (event) => {
     setPaymentMethod(event.target.value);
@@ -18,7 +19,7 @@ const Transaction = () => {
   };
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.id]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
   const totalAmount = cartItems.reduce((total, item) => {
@@ -26,44 +27,105 @@ const Transaction = () => {
     return total + price * (item.selectedQuantity || 1);
   }, 0);
 
+  // Fetch seller IDs for products in the cart
+  const fetchSellerIds = async () => {
+    const fetchedSellerIds = [];
+    for (const item of cartItems) {
+      if (item.product_id) {
+        const { data, error } = await supabase
+          .from('products')
+          .select('created_by')
+          .eq('id', item.product_id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching seller_id:', error);
+        } else {
+          fetchedSellerIds.push({ product_id: item.product_id, seller_id: data.created_by });
+        }
+      }
+    }
+    setSellerIds(fetchedSellerIds);
+  };
+
+  useEffect(() => {
+    fetchSellerIds();
+  }, [cartItems]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!paymentMethod) return alert("Please select a payment method.");
-    if (paymentMethod === 'creditCard' && !formData.cardNumber) return alert("Please enter your credit card number.");
-    if (paymentMethod === 'gpay' && !formData.gpayId) return alert("Please enter your GPay UPI ID.");
-    if (paymentMethod === 'bankTransfer' && !formData.accountNumber) return alert("Please enter your account number.");
+    if (!paymentMethod) return alert('Please select a payment method.');
+    if (paymentMethod === 'gpay' && !formData.gpayId) return alert('Please enter your GPay UPI ID.');
+    if (paymentMethod === 'bankTransfer' && !formData.accountNumber) return alert('Please enter your account number.');
+
+    // Simulating UPI Payment with Hardcoded UPI IDs
+    const validUpiIds = ['jegan@hdfc', 'admin@indusbnk'];
+    if (paymentMethod === 'gpay' && !validUpiIds.includes(formData.gpayId)) {
+      return alert('Invalid UPI ID. Please enter a valid one.');
+    }
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
+
     if (authError || !user) {
-      alert("You need to be logged in to complete the transaction.");
+      alert('You need to be logged in to complete the transaction.');
       return;
     }
 
     const clientId = user.id;
     const successPromises = [];
+    const rollbackPromises = [];
 
     try {
+      const transactionBatch = [];
+
       for (const item of cartItems) {
-        setLoadingItems(prev => [...prev, item.id]);
+        setLoadingItems((prev) => [...prev, item.id]);
 
         const quantity = item.selectedQuantity || 1;
         const isProduct = !!item.product_id;
         const orderTable = isProduct ? 'orders' : 'rental_orders';
         const itemIdField = isProduct ? 'product_id' : 'rental_id';
         const sourceTable = isProduct ? 'products' : 'rentals';
+        const tableName = isProduct ? 'Product' : 'Rental';
+
+        // Find seller_id for the current item from the fetched sellerIds
+        const sellerId = sellerIds.find((seller) => seller.product_id === item.product_id)?.seller_id;
+
+        // If sellerId is not found, throw an error
+        if (!sellerId) {
+          console.error('Seller ID not found for item:', item);
+          continue;
+        }
+
+        // Log the seller_id for each item
+        console.log(`Item: ${item.name} - Seller ID: ${sellerId}`);
+
+        // Check if the transaction already exists
+        const { data: existingTransaction } = await supabase
+          .from('transactions')
+          .select('id')
+          .eq('client_id', clientId)
+          .eq('reference_id', item.id)
+          .eq('reference_table', orderTable)
+          .single();
+
+        if (existingTransaction) {
+          console.log('Transaction already exists:', existingTransaction);
+          continue; // Skip the current item if the transaction already exists
+        }
 
         // Insert into the orders or rental_orders table
         const { data: order, error: orderError } = await supabase
           .from(orderTable)
           .insert([{
             client_id: clientId,
-            seller_id: item.seller_id,
+            seller_id: sellerId,
             [itemIdField]: item.id,
             quantity,
             total_price: (item.price || item.rent_per_day) * quantity,
             status: 'pending',
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
           }])
           .select()
           .single();
@@ -79,44 +141,60 @@ const Transaction = () => {
             transaction_for: isProduct ? 'order' : 'rental',
             reference_id: order.id,
             reference_table: orderTable,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
           }]);
 
         if (transactionError) throw transactionError;
+
+        // Rollback operation in case of failure
+        const rollbackOperation = async () => {
+          await supabase
+            .from(sourceTable)
+            .update({
+              quantity: supabase.raw('quantity + ?', [quantity]), // Rollback by adding the quantity back
+            })
+            .eq('id', item.id);
+        };
+        rollbackPromises.push(rollbackOperation);
 
         // Update the quantity in the products or rentals table
         const { error: updateQtyError } = await supabase
           .from(sourceTable)
           .update({
-            quantity: supabase.raw('quantity - ?', [quantity])  // Update quantity by subtracting the ordered quantity
+            quantity: supabase.raw('quantity - ?', [quantity]), // Reduce quantity by subtracting the ordered quantity
           })
           .eq('id', item.id);
 
         if (updateQtyError) throw updateQtyError;
 
-        // Mark the order or rental order as completed
-        await supabase
-          .from(orderTable)
-          .update({ status: 'completed' })
-          .eq('id', order.id);
+        // Mark the order as completed
+        await supabase.from(orderTable).update({ status: 'completed' }).eq('id', order.id);
 
         successPromises.push(order);
-        setLoadingItems(prev => prev.filter(id => id !== item.id));
+        setLoadingItems((prev) => prev.filter((id) => id !== item.id));
       }
 
-      // Wait for all transactions to finish
+      // Wait for all successful promises
       await Promise.all(successPromises);
+
+      // Transaction success
       setTransactionStatus('success');
     } catch (error) {
       console.error('Transaction Failed:', error);
-      alert("Something went wrong during the transaction.");
+
+      // Rollback all changes in case of failure
+      for (const rollback of rollbackPromises) {
+        await rollback();
+      }
+
+      alert('Something went wrong during the transaction.');
     }
   };
 
   useEffect(() => {
     if (transactionStatus === 'success') {
       alert('✅ Payment successful!');
-      navigate('/');
+      navigate('/dashboard');  // Redirecting to the dashboard page
     }
   }, [transactionStatus, navigate]);
 
@@ -131,7 +209,7 @@ const Transaction = () => {
           <ul className="text-gray-800 mb-4 space-y-2">
             {cartItems.map((item) => {
               const isProduct = !!item.product_id;
-              const tableName = isProduct ? 'Product' : 'Rental';  // Set the table name for display
+              const tableName = isProduct ? 'Product' : 'Rental'; // Set the table name for display
               return (
                 <li key={item.id} className="flex flex-col border-b pb-2">
                   <div className="flex justify-between">
@@ -160,27 +238,10 @@ const Transaction = () => {
               className="block w-full bg-white border border-gray-400 px-4 py-2 rounded shadow focus:outline-none"
             >
               <option value="">Choose a method</option>
-              <option value="creditCard">Credit Card</option>
               <option value="gpay">GPay</option>
               <option value="bankTransfer">Bank Transfer</option>
             </select>
           </div>
-
-          {paymentMethod === 'creditCard' && (
-            <div className="mb-4">
-              <label className="block text-gray-700 font-bold mb-2" htmlFor="cardNumber">
-                Card Number
-              </label>
-              <input
-                type="text"
-                id="cardNumber"
-                value={formData.cardNumber || ''}
-                onChange={handleChange}
-                placeholder="1234 5678 9012 3456"
-                className="input-style"
-              />
-            </div>
-          )}
 
           {paymentMethod === 'gpay' && (
             <div className="mb-4">
@@ -192,8 +253,7 @@ const Transaction = () => {
                 id="gpayId"
                 value={formData.gpayId || ''}
                 onChange={handleChange}
-                placeholder="example@okaxis"
-                className="input-style"
+                className="block w-full bg-white border border-gray-400 px-4 py-2 rounded shadow focus:outline-none"
               />
             </div>
           )}
@@ -201,25 +261,24 @@ const Transaction = () => {
           {paymentMethod === 'bankTransfer' && (
             <div className="mb-4">
               <label className="block text-gray-700 font-bold mb-2" htmlFor="accountNumber">
-                Account Number
+                Bank Account Number
               </label>
               <input
                 type="text"
                 id="accountNumber"
                 value={formData.accountNumber || ''}
                 onChange={handleChange}
-                placeholder="123456789"
-                className="input-style"
+                className="block w-full bg-white border border-gray-400 px-4 py-2 rounded shadow focus:outline-none"
               />
             </div>
           )}
 
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-between items-center">
             <button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg"
+              className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg w-full hover:bg-blue-500 transition duration-300"
             >
-              {loadingItems.length ? 'Processing...' : 'Pay Now'}
+              Pay Now
             </button>
           </div>
         </form>
