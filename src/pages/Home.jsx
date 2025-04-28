@@ -36,8 +36,8 @@ const Home = () => {
         alt="Hero"
         className="w-full h-full object-cover mix-blend-overlay"
       />
-      <div className="absolute inset-0 flex translate-y-40">
-        <h2 className="text-4xl font-semibold text-slate-700">
+      <div className="absolute inset-0 flex translate-y-10 items-center justify-center">
+        <h2 className="text-4xl font-semibold text-slate-700 text-center">
           A B2C digital marketplace where fair food trade is made easy, fast, and transparent!
         </h2>
       </div>

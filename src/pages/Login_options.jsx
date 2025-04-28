@@ -15,7 +15,7 @@ const Login_options = () => {
 
   return (
     <div className="pt-30 flex items-center justify-center bg-gray-100 pb-55">
-      <div className="bg-white p-15 rounded-lg shadow-lg w-full max-w-md space-y-6">
+      <div className="bg-white mt-20 mb-36 p-20 rounded-lg shadow-lg w-full max-w-md space-y-6">
         <h1 className="text-xl font-semibold text-center">Choose who you are...</h1>
         <div className="flex justify-around pt-4">
           <button

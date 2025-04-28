@@ -64,10 +64,15 @@ const Rental_list = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!id) {
+      console.error('Invalid ID, cannot delete.');
+      return;
+    }
+
     const confirmDelete = window.confirm('Are you sure you want to delete this rental?');
     if (!confirmDelete) return;
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('rentals')
       .delete()
       .eq('id', id);
@@ -76,14 +81,13 @@ const Rental_list = () => {
       console.error('Delete error:', error.message);
       alert('Failed to delete rental.');
     } else {
-      alert('Rental deleted.');
-      fetchRentals();
+      alert('Rental deleted successfully!');
+      fetchRentals(); // refresh the list
     }
   };
 
   return (
-    <div className="pt-10 px-10 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-8">Rental Listings</h1>
+    <div className="pt-20 px-10 bg-gray-50 min-h-screen">
 
       {/* ✅ Add Rental Form */}
       <AddRentalForm onRentalAdded={fetchRentals} />
