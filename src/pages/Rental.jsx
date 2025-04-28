@@ -1,89 +1,159 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { IoMdAdd } from 'react-icons/io';
+import { GrFormSubtract } from 'react-icons/gr';
+import { FiSave } from 'react-icons/fi';
+import { MdDelete } from 'react-icons/md';
 import { supabase } from '../../supabaseClient';
-import { FaCartShopping } from "react-icons/fa6";
-import { useCart } from '../context/CartContext'; // Import Cart hook
+import AddRentalForm from '../Seller/AddRentalForm';
 
-const Rental = () => {
+const Rental_list = () => {
   const [rentals, setRentals] = useState([]);
-  const { addToCart } = useCart(); // Use cart context
 
-  useEffect(() => {
-    fetchRentals();
-  }, []);
-
+  // Fetch rentals from Supabase
   const fetchRentals = async () => {
-    const { data, error } = await supabase.from('rentals').select('*').eq('available', true);
+    const { data, error } = await supabase
+      .from('rentals')
+      .select('*')
+      .order('created_at', { ascending: false });
+
     if (error) {
-      console.error('Error fetching rentals:', error);
+      console.error('Error fetching rentals:', error.message);
     } else {
       setRentals(data);
     }
   };
 
-  const handleAddToCart = (rental) => {
-    // Create the rental item to be added to the cart
-    const rentalItem = {
-      id: rental.id,
-      name: rental.name,
-      rent_per_day: rental.rent_per_day,
-      image: rental.image,
-      description: rental.description,
-      price: rental.rent_per_day,  // Add the rent price
-      table: 'rentals', // Mark as rental
-    };
+  useEffect(() => {
+    fetchRentals();
+  }, []);
 
-    // Add to cart
-    addToCart(rentalItem);
+  // Increase rent
+  const handleAdd = (id) => {
+    setRentals(rentals.map(rental =>
+      rental.id === id ? { ...rental, rent_per_day: rental.rent_per_day + 10 } : rental
+    ));
+  };
 
-    // Log the table name when the rental item is added to the cart
-    console.log('Added to cart from table:', rentalItem.table); // Logs 'rentals'
+  // Decrease rent
+  const handleSubtract = (id) => {
+    setRentals(rentals.map(rental =>
+      rental.id === id && rental.rent_per_day > 0
+        ? { ...rental, rent_per_day: rental.rent_per_day - 10 }
+        : rental
+    ));
+  };
+
+  // Manually change rent
+  const handleManualChange = (id, value) => {
+    const newPrice = Math.max(0, parseFloat(value) || 0);
+    setRentals(rentals.map(rental =>
+      rental.id === id ? { ...rental, rent_per_day: newPrice } : rental
+    ));
+  };
+
+  // Save rent changes to Supabase
+  const handleSave = async (id) => {
+    const rentalToSave = rentals.find(r => r.id === id);
+    const { error } = await supabase
+      .from('rentals')
+      .update({ rent_per_day: rentalToSave.rent_per_day })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error saving rental:', error.message);
+      alert('Failed to update rental.');
+    } else {
+      alert('Rental updated!');
+      fetchRentals();
+    }
+  };
+
+  // Optimistic delete
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this rental?');
+    if (!confirmDelete) return;
+
+    // Optimistically update UI
+    setRentals(prev => prev.filter(rental => rental.id !== id));
+
+    const { error } = await supabase
+      .from('rentals')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Delete error:', error.message);
+      alert('Failed to delete rental: ' + error.message);
+      // Optional fallback to re-sync
+      fetchRentals();
+    } else {
+      alert('Rental deleted successfully!');
+    }
   };
 
   return (
-    <div className="pt-10">
-      {/* Search Bar */}
-      <div className="group mb-8">
-        <input
-          id="query"
-          className="input"
-          type="search"
-          placeholder="Search..."
-          name="searchbar"
-        />
-      </div>
+    <div className="pt-20 px-10 bg-gray-50 min-h-screen">
 
-      {/* Rental Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6">
-        {rentals.map((rental) => (
-          <div key={rental.id} className="w-full relative">
-            <div className="card">
-              <div className="card-inner">
-                <div className="card-front">
-                  <img
-                    src={rental.image}
-                    alt={rental.name}
-                    className="object-cover h-52 w-full rounded-xl"
-                  />
-                </div>
-                <div className="card-back p-4 bg-white rounded-xl shadow-lg">
-                  <div className="mb-2 text-black cart">
-                    <button onClick={() => handleAddToCart(rental)}>
-                      <FaCartShopping size={22} />
-                    </button>
-                  </div>
-                  <div className="mt-3 space-y-1 text-center">
-                    <h1 className="text-xl font-semibold text-slate-700">{rental.name}</h1>
-                    <h1>Price: ₹{rental.rent_per_day} /day</h1>
-                    <h3>Rating: {rental.rating || '4.5 ⭐'}</h3>
-                  </div>
-                </div>
+      {/* Add Rental Form */}
+      <AddRentalForm onRentalAdded={fetchRentals} />
+
+      <section className="mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {rentals.map(rental => (
+            <div
+              key={rental.id}
+              className="bg-white rounded-xl shadow-lg p-4 flex flex-col items-center hover:shadow-xl transition-shadow"
+            >
+              <img
+                src={rental.image}
+                alt={rental.name}
+                className="object-cover h-40 w-full rounded-lg mb-4"
+              />
+              <h1 className="text-xl font-semibold text-slate-800">{rental.name}</h1>
+              <p className="text-gray-600">{rental.description}</p>
+
+              <div className="flex items-center space-x-4 mt-2">
+                <IoMdAdd
+                  className="border-2 rounded-full p-1 w-7 h-7 cursor-pointer hover:bg-green-100"
+                  onClick={() => handleAdd(rental.id)}
+                />
+
+                <input
+                  type="number"
+                  value={rental.rent_per_day}
+                  onChange={(e) => handleManualChange(rental.id, e.target.value)}
+                  className="w-20 text-center border rounded-md p-1 text-gray-700"
+                />
+
+                <GrFormSubtract
+                  className={`border-2 rounded-full p-1 w-7 h-7 cursor-pointer hover:bg-red-100 ${
+                    rental.rent_per_day === 0 ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  onClick={() => handleSubtract(rental.id)}
+                />
+              </div>
+
+              <div className="flex space-x-4 mt-4 w-full">
+                <button
+                  onClick={() => handleSave(rental.id)}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md flex items-center justify-center gap-2 hover:bg-blue-700 transition-all duration-200"
+                >
+                  <FiSave /> Save
+                </button>
+
+                <button
+                  onClick={() => handleDelete(rental.id)}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md flex items-center justify-center gap-2 hover:bg-red-700 transition-all duration-200"
+                >
+                  <MdDelete /> Delete
+                </button>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
     </div>
   );
 };
 
-export default Rental;
+export default Rental_list;
