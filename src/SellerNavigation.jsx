@@ -51,7 +51,6 @@ const Seller_navigation = () => {
       <header>
         <div className="bg-green-600 text-white p-4 flex justify-between fixed w-full z-10 items-center">
           <h1 className="text-2xl font-bold">{display.agrilink}</h1>
-          <div className="flex gap-4 items-center">
             <Link to="/sDashboard" className="text-white">{display.dashboard}</Link>
             <Link to="/sproducts" className="text-white">{display.products_list}</Link>
             <Link to="/srental" className="text-white">{display.rental_list}</Link>
@@ -65,7 +64,6 @@ const Seller_navigation = () => {
             >
               {isTamil ? 'English' : 'தமிழ்'}
             </button>
-          </div>
         </div>
       </header>
     </div>
