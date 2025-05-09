@@ -47,8 +47,17 @@ const Navigation = () => {
       }
       setTranslatedLabels(translated);
       setIsTamil(!isTamil);
+      changeLanguageTo(targetLang); // Change the language of the page
     } catch (err) {
       console.error('Translation failed:', err.message);
+    }
+  };
+
+  const changeLanguageTo = (langCode) => {
+    const select = document.querySelector(".goog-te-combo");
+    if (select) {
+      select.value = langCode;
+      select.dispatchEvent(new Event("change"));
     }
   };
 
@@ -107,35 +116,35 @@ const Navigation = () => {
     <header>
       <div className="bg-green-600 text-white p-4 flex flex-wrap justify-between fixed w-full z-10 items-center">
         <h1 className="text-2xl font-bold">{display.agrilink}</h1>
-          <Link to="/" className="text-white">{display.home}</Link>
-          <Link to="/products" className="text-white">{display.products}</Link>
-          <Link to="/rental" className="text-white">{display.rental}</Link>
+        <Link to="/" className="text-white">{display.home}</Link>
+        <Link to="/products" className="text-white">{display.products}</Link>
+        <Link to="/rental" className="text-white">{display.rental}</Link>
 
-          {session && role === 'client' && (
-            <>
-              <Link to="/client-dashboard" className="text-white">{display.dashboard}</Link>
-              <Link to="/cart" className="text-white">{display.cart}</Link>
-              <Link to="/transaction" className="text-white">{display.transaction}</Link>
-            </>
-          )}
+        {session && role === 'client' && (
+          <>
+            <Link to="/client-dashboard" className="text-white">{display.dashboard}</Link>
+            <Link to="/cart" className="text-white">{display.cart}</Link>
+            <Link to="/transaction" className="text-white">{display.transaction}</Link>
+          </>
+        )}
 
-          {session && role === 'seller' && (
-            <Link to="/sDashboard" className="text-white">{display.dashboard}</Link>
-          )}
+        {session && role === 'seller' && (
+          <Link to="/sDashboard" className="text-white">{display.dashboard}</Link>
+        )}
 
-          {!session ? (
-            <Link to="/login_options" className="text-white">{display.login}</Link>
-          ) : (
-            <button onClick={handleLogout} className="text-white">{display.logout}</button>
-          )}
+        {!session ? (
+          <Link to="/login_options" className="text-white">{display.login}</Link>
+        ) : (
+          <button onClick={handleLogout} className="text-white">{display.logout}</button>
+        )}
 
-          {/* Translate Button */}
-          <button
-            onClick={translateLabels}
-            className="ml-2 px-3 py-1 bg-yellow-400 text-black font-medium rounded hover:bg-yellow-500 transition"
-          >
-            {isTamil ? 'English' : 'தமிழ்'}
-          </button>
+        {/* Translate Button */}
+        <button
+          onClick={translateLabels}
+          className="ml-2 px-3 py-1 bg-yellow-400 text-black font-medium rounded hover:bg-yellow-500 transition"
+        >
+          {isTamil ? 'English' : 'தமிழ்'}
+        </button>
       </div>
     </header>
   );

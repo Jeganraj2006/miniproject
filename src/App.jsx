@@ -20,6 +20,7 @@ import Navigation from './Navigation';
 import Footer from './assets/Footer';
 import AuthCallback from './pages/AuthCallback';
 import ClientDashboard from './pages/ClientDashboard';
+import Googletranslate from './utils/GoogleTranslate'
 
 import Seller_navigation from './SellerNavigation';
 import Seller_Login from './Seller/SellerLogin';
@@ -84,6 +85,7 @@ function AppContent() {
         <Route path="/login_options" element={<Login_options />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/auth-callback" element={<AuthCallback />} />
+        <Route path="/googletranslate" element={<Googletranslate/>}/>
         <Route path="/client-dashboard" element={
           <PrivateRoute allowedRole="client">
             <ClientDashboard />
@@ -98,6 +100,7 @@ function AppContent() {
             <Dashboard />
           </PrivateRoute>
         } />
+
         <Route path="/srental" element={<RentalList />} />
         <Route path="/sproducts" element={<Productslist />} />
         <Route path="/sorder_history" element={<Orders_History />} />
