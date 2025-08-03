@@ -2,17 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { IoMdAdd } from 'react-icons/io';
 import { GrFormSubtract } from 'react-icons/gr';
 import { FiSave } from 'react-icons/fi';
-import { MdDelete } from 'react-icons/md'; // 🆕 Import delete icon
-import { supabase } from '../../supabaseClient'; // adjust if needed
-import AddRentalForm from './AddRentalForm'; // ✅ Import added
+import { MdDelete } from 'react-icons/md';
+import { supabase } from '../../supabaseClient';
+import AddRentalForm from './AddRentalForm';
 
 const Rental_list = () => {
   const [rentals, setRentals] = useState([]);
+  const [userId, setUserId] = useState(null);
 
+  // Fetch current user and their rentals
   const fetchRentals = async () => {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error('Failed to fetch user:', userError?.message);
+      return;
+    }
+
+    setUserId(user.id);
+
     const { data, error } = await supabase
       .from('rentals')
       .select('*')
+      .eq('seller_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -72,7 +87,7 @@ const Rental_list = () => {
     const confirmDelete = window.confirm('Are you sure you want to delete this rental?');
     if (!confirmDelete) return;
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('rentals')
       .delete()
       .eq('id', id);
@@ -82,15 +97,14 @@ const Rental_list = () => {
       alert('Failed to delete rental.');
     } else {
       alert('Rental deleted successfully!');
-      fetchRentals(); // refresh the list
+      fetchRentals();
     }
   };
 
   return (
     <div className="pt-20 px-10 bg-gray-50 min-h-screen">
-
-      {/* ✅ Add Rental Form */}
-      <AddRentalForm onRentalAdded={fetchRentals} />
+      {/* ✅ Add Rental Form with seller_id */}
+      {userId && <AddRentalForm onRentalAdded={fetchRentals} sellerId={userId} />}
 
       <section className="mt-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -136,7 +150,6 @@ const Rental_list = () => {
                   <FiSave /> Save
                 </button>
 
-                {/* 🗑️ Delete Button */}
                 <button
                   onClick={() => handleDelete(rental.id)}
                   className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md flex items-center gap-2 hover:bg-red-700 transition-all duration-200"

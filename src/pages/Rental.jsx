@@ -1,159 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { IoMdAdd } from 'react-icons/io';
-import { GrFormSubtract } from 'react-icons/gr';
-import { FiSave } from 'react-icons/fi';
-import { MdDelete } from 'react-icons/md';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
-import AddRentalForm from '../Seller/AddRentalForm';
+import { FaCartShopping } from 'react-icons/fa6';
+import { useCart } from '../context/CartContext';
 
-const Rental_list = () => {
+const RentalList = () => {
   const [rentals, setRentals] = useState([]);
-
-  // Fetch rentals from Supabase
-  const fetchRentals = async () => {
-    const { data, error } = await supabase
-      .from('rentals')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching rentals:', error.message);
-    } else {
-      setRentals(data);
-    }
-  };
+  const [searchQuery, setSearchQuery] = useState('');
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchRentals();
-  }, []);
+  }, [searchQuery]);
 
-  // Increase rent
-  const handleAdd = (id) => {
-    setRentals(rentals.map(rental =>
-      rental.id === id ? { ...rental, rent_per_day: rental.rent_per_day + 10 } : rental
-    ));
-  };
+  const fetchRentals = async () => {
+    try {
+      let query = supabase
+        .from('rentals')
+        .select('id, name, rent_per_day, image'); // Adjusted for rentals
 
-  // Decrease rent
-  const handleSubtract = (id) => {
-    setRentals(rentals.map(rental =>
-      rental.id === id && rental.rent_per_day > 0
-        ? { ...rental, rent_per_day: rental.rent_per_day - 10 }
-        : rental
-    ));
-  };
+      if (searchQuery) {
+        query = query.ilike('name', `%${searchQuery}%`);
+      }
 
-  // Manually change rent
-  const handleManualChange = (id, value) => {
-    const newPrice = Math.max(0, parseFloat(value) || 0);
-    setRentals(rentals.map(rental =>
-      rental.id === id ? { ...rental, rent_per_day: newPrice } : rental
-    ));
-  };
+      const { data, error } = await query;
+      if (error) throw error;
 
-  // Save rent changes to Supabase
-  const handleSave = async (id) => {
-    const rentalToSave = rentals.find(r => r.id === id);
-    const { error } = await supabase
-      .from('rentals')
-      .update({ rent_per_day: rentalToSave.rent_per_day })
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error saving rental:', error.message);
-      alert('Failed to update rental.');
-    } else {
-      alert('Rental updated!');
-      fetchRentals();
+      setRentals(data || []);
+    } catch (error) {
+      console.error('Error fetching rentals:', error.message);
     }
   };
 
-  // Optimistic delete
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this rental?');
-    if (!confirmDelete) return;
-
-    // Optimistically update UI
-    setRentals(prev => prev.filter(rental => rental.id !== id));
-
-    const { error } = await supabase
-      .from('rentals')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error('Delete error:', error.message);
-      alert('Failed to delete rental: ' + error.message);
-      // Optional fallback to re-sync
-      fetchRentals();
-    } else {
-      alert('Rental deleted successfully!');
-    }
+  const handleAddToCart = (rentals) => {
+    const cartItem = {
+      ...rentals,
+      table: 'rentals', // Mark as rental
+    };
+    addToCart(cartItem); // Add rental to cart
+    console.log('Added to cart from table:', cartItem.table); // Logs 'rentals'
   };
 
   return (
-    <div className="pt-20 px-10 bg-gray-50 min-h-screen">
+    <div className="pt-10">
+      {/* Search Bar */}
+      <div className="mt-10 flex items-center border-2 border-emerald-600 rounded-xl px-4 py-2 max-w-md mx-auto mb-6">
+        <svg width="19px" height="19px" viewBox="0 0 24 24" className="text-emerald-600 mr-2">
+          <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5-3.365-7.5-7.5z" />
+        </svg>
+        <input
+          type="search"
+          placeholder="Search rentals..."
+          className="w-full focus:outline-none"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
 
-      {/* Add Rental Form */}
-      <AddRentalForm onRentalAdded={fetchRentals} />
-
-      <section className="mt-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {rentals.map(rental => (
-            <div
-              key={rental.id}
-              className="bg-white rounded-xl shadow-lg p-4 flex flex-col items-center hover:shadow-xl transition-shadow"
-            >
-              <img
-                src={rental.image}
-                alt={rental.name}
-                className="object-cover h-40 w-full rounded-lg mb-4"
-              />
-              <h1 className="text-xl font-semibold text-slate-800">{rental.name}</h1>
-              <p className="text-gray-600">{rental.description}</p>
-
-              <div className="flex items-center space-x-4 mt-2">
-                <IoMdAdd
-                  className="border-2 rounded-full p-1 w-7 h-7 cursor-pointer hover:bg-green-100"
-                  onClick={() => handleAdd(rental.id)}
-                />
-
-                <input
-                  type="number"
-                  value={rental.rent_per_day}
-                  onChange={(e) => handleManualChange(rental.id, e.target.value)}
-                  className="w-20 text-center border rounded-md p-1 text-gray-700"
-                />
-
-                <GrFormSubtract
-                  className={`border-2 rounded-full p-1 w-7 h-7 cursor-pointer hover:bg-red-100 ${
-                    rental.rent_per_day === 0 ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                  onClick={() => handleSubtract(rental.id)}
-                />
-              </div>
-
-              <div className="flex space-x-4 mt-4 w-full">
-                <button
-                  onClick={() => handleSave(rental.id)}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md flex items-center justify-center gap-2 hover:bg-blue-700 transition-all duration-200"
-                >
-                  <FiSave /> Save
-                </button>
-
-                <button
-                  onClick={() => handleDelete(rental.id)}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md flex items-center justify-center gap-2 hover:bg-red-700 transition-all duration-200"
-                >
-                  <MdDelete /> Delete
-                </button>
+      {/* Rental Cards */}
+      <section className="mb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6">
+        {rentals.map((rental) => (
+          <div key={rental.id} className="w-full relative">
+            <div className="card">
+              <div className="card-inner">
+                <div className="card-front">
+                  <img
+                    src={rental.image}
+                    alt={rental.name}
+                    className="object-cover h-52 w-full rounded-xl"
+                  />
+                </div>
+                <div className="card-back p-4 bg-white rounded-xl shadow-lg">
+                  <div className="mb-2 text-black cart">
+                    <button onClick={() => handleAddToCart(rental)}>
+                      <FaCartShopping size={22} />
+                    </button>
+                  </div>
+                  <div className="mt-3 space-y-1 text-center">
+                    <h1 className="text-xl font-semibold text-slate-700">{rental.name}</h1>
+                    <h1>Price: ₹{rental.rent_per_day} /day</h1>
+                    <h3 className="text-green-700 font-medium">
+                      Available
+                    </h3>
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </section>
     </div>
   );
 };
 
-export default Rental_list;
+export default RentalList;

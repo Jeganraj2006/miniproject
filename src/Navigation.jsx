@@ -140,11 +140,11 @@ const Navigation = () => {
 
         {/* Translate Button */}
         <button
-          onClick={translateLabels}
-          className="ml-2 px-3 py-1 bg-yellow-400 text-black font-medium rounded hover:bg-yellow-500 transition"
-        >
-          {isTamil ? 'English' : 'தமிழ்'}
-        </button>
+            onClick={translateLabels}
+            className="ml-2 px-3 py-1 bg-yellow-400 text-black font-medium rounded hover:bg-yellow-500 transition"
+          >
+            
+          </button>
       </div>
     </header>
   );

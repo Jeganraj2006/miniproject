@@ -48,7 +48,7 @@ const Login = () => {
                         </button>
                         </LoginSocialGoogle>
                     </div>
-                    <div>
+                    {/* <div>
                         <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition duration-300">
                         <FaFacebookF />
                         </button>
@@ -57,7 +57,7 @@ const Login = () => {
                         <button className="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition duration-300">
                             <AiOutlineX />
                         </button>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="mt-6 text-center">
                     <Link to="/signup" className="text-blue-500 hover:underline">Don't have an account? Sign up</Link>

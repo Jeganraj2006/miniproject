@@ -117,12 +117,12 @@ const Seller_Login = () => {
               <AiOutlineGoogle />
             </button>
           )}
-          <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition duration-300">
+          {/* <button className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition duration-300">
             <FaFacebookF />
           </button>
           <button className="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition duration-300">
             <AiOutlineX />
-          </button>
+          </button> */}
         </div>
 
         <div className="mt-6 text-center">
